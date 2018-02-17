@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="card_radius">8dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_padding">10dp</dimen>
+
+    <dimen name="drawer_padding">8dp</dimen>
+    <dimen name="drawer_divider_height">8dp</dimen>
+    <dimen name="drawer_title_top_margin">12dp</dimen>
+
+    <dimen name="card_content_size">5sp</dimen>
+    <dimen name="card_description_size">4sp</dimen>
+</resources>

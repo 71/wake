@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <bitmap
+            android:gravity="start|top|clip_vertical"
+            android:src="@drawable/header_img" />
+    </item>
+
+</layer-list>

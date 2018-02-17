@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Wake</string>
+    <string name="directories">Directories</string>
+    <string name="files">Files</string>
+
+    <string name="create_file">Create file</string>
+    <string name="create_dir">Create directory</string>
+    <string name="create">Create</string>
+    <string name="file_name">File name</string>
+    <string name="dir_name">Directory name</string>
+
+    <string name="lastModified">Last modified %1$s.</string>
+
+    <string name="askPermission">
+        ## File access permission
+        \n
+        \nPlease grant us access to the external storage, in order to edit files.
+    </string>
+
+    <string name="defaultFile">
+        # Welcome
+        \n
+        \n
+        \nWake is open-source, and [can be found on GitHub](https://github.com/6A/wake).
+    </string>
+
+    <string name="defaultPreferences">
+        # Preferences
+        \n
+        \nPreferences can be set using the code block below.
+        \n
+        \n```yaml
+        \n
+        \n```
+    </string>
+
+    <string name="defaultTheme">
+        # Theme
+        \n
+        \nThe current theme of the application can be set using the code block below.
+        \n
+        \n```yaml
+        \nfont: \'Roboto Mono\', monospace
+        \nbackground: #000
+        \nforeground: #fff
+        \n```
+    </string>
+
+    <string name="about">
+        # About
+        \n
+        \n - Made by [Grégoire Geis](mailto:hello@gregoirege.is).
+        \n - Repository hosted [on GitHub](https://github.com/6A/wake).
+        \n
+        \n ## Licenses and attributions
+        \n - Header background by [Aaron Burden](https://unsplash.com/@aaronburden).
+    </string>
+</resources>
