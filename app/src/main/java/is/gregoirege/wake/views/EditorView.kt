@@ -1,4 +1,4 @@
-package `is`.gregoirege.wake.components
+package `is`.gregoirege.wake.views
 
 import `is`.gregoirege.wake.R
 import `is`.gregoirege.wake.Renderer
@@ -29,6 +29,7 @@ class EditorView(private val activity: EditActivity) : AnkoViewProvider<FrameLay
     lateinit var fab : FloatingActionButton private set
     lateinit var mainFrame: FrameLayout private set
 
+    var lastHash = 0
     var isDirty = false
         set(value) {
             field = value
@@ -66,8 +67,10 @@ class EditorView(private val activity: EditActivity) : AnkoViewProvider<FrameLay
 
                     textChangedListener {
                         onTextChanged { s, start, before, count ->
-                            this@EditorView.isDirty = true
-                            renderer.render(s!!.toString(), start, before, count)
+                            val str = s!!.toString()
+
+                            this@EditorView.isDirty = str.hashCode() != lastHash
+                            renderer.render(str, start, before, count)
                         }
                     }
 
@@ -87,8 +90,10 @@ class EditorView(private val activity: EditActivity) : AnkoViewProvider<FrameLay
                 visibility = View.INVISIBLE
 
                 onClick {
-                    ui.owner.currentFile.writeText(editor.text.toString())
+                    val str = editor.text.toString()
+                    ui.owner.currentFile.writeText(str)
                     this@EditorView.isDirty = false
+                    lastHash = str.hashCode()
                 }
             }.lparams(gravity = Gravity.BOTTOM or Gravity.END) {
                 margin = dimen(R.dimen.fab_margin)

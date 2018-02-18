@@ -8,6 +8,10 @@
     <dimen name="drawer_padding">8dp</dimen>
     <dimen name="drawer_divider_height">8dp</dimen>
     <dimen name="drawer_title_top_margin">12dp</dimen>
+    <dimen name="drawer_image_cut">40dp</dimen>
+
+    <dimen name="circle_size">44dp</dimen>
+    <dimen name="file_padding">14dp</dimen>
 
     <dimen name="card_content_size">5sp</dimen>
     <dimen name="card_description_size">4sp</dimen>

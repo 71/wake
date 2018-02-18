@@ -61,6 +61,9 @@ class Renderer(private val context: Context, private val theme: Theme, private v
             VisitHandler(MailLink::class.java, ::visit),
             VisitHandler(InlineLinkNode::class.java, ::visit),
 
+            VisitHandler(Image::class.java, ::visit),
+            VisitHandler(ImageRef::class.java, ::visit),
+
             VisitHandler(BulletListItem::class.java, ::visit),
 
             VisitHandler(CodeBlock::class.java, ::visit),
@@ -163,6 +166,26 @@ class Renderer(private val context: Context, private val theme: Theme, private v
     }
 
 
+    private fun visit(image: Image) {
+        val uri = try {
+            Uri.parse(image.url.toString())
+        } catch (e: Exception) {
+            return
+        }
+
+        // setSpan(ImageSpan(context, uri), image)
+    }
+    private fun visit(image: ImageRef) {
+        val uri = try {
+            Uri.parse(image.url.toString())
+        } catch (e: Exception) {
+            return
+        }
+
+        // setSpan(ImageSpan(context, uri), image)
+    }
+
+
     private fun visit(bulletListItem: BulletListItem) {
         setSpan(BulletSpan(20, 0x00000000), bulletListItem)
     }
@@ -215,13 +238,18 @@ class Renderer(private val context: Context, private val theme: Theme, private v
         val editable = getEditable()
         val prevEnd = start + before
 
-        for (span in spans) {
+        var i = 0
+
+        while (i < spans.count()) {
+            val span = spans[i]
+
             if (max(start, span.start) - min(prevEnd, span.end) <= 0) {
                 editable.removeSpan(span.style)
+                spans.removeAt(i)
+            } else {
+                i++
             }
         }
-
-        spans.clear()
 
         if (s.isNotEmpty()) {
             visitor.visit(parser.parse(s))

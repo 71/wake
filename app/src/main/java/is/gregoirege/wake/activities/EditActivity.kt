@@ -1,8 +1,8 @@
 package `is`.gregoirege.wake.activities
 
 import `is`.gregoirege.wake.R
-import `is`.gregoirege.wake.components.BrowserView
-import `is`.gregoirege.wake.components.EditorView
+import `is`.gregoirege.wake.views.BrowserView
+import `is`.gregoirege.wake.views.EditorView
 import `is`.gregoirege.wake.helpers.Theme
 import android.Manifest
 import android.app.Activity
@@ -127,6 +127,12 @@ class EditActivity : AppCompatActivity() {
         browser.fileTextView.text = currentFile.name
 
         drawer.closeDrawer(Gravity.START)
+
+        val text = file.readText()
+
+        editor.lastHash = text.hashCode()
+        editor.isDirty = false
+
         editor.editor.setText(file.readText())
         editor.fab.hide()
     }

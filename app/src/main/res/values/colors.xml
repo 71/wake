@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="create">#d50000</color>
     <color name="save">#00b0ff</color>
+
+    <color name="create">#ffab00</color>
+    <color name="background_circle">#ef6c00</color>
 </resources>
