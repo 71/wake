@@ -1,4 +1,4 @@
-package `is`.gregoirege.wake
+package `is`.gregoirege.wake.helpers
 
 import android.os.FileObserver
 

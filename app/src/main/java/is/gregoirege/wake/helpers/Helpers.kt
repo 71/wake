@@ -1,9 +1,14 @@
-package `is`.gregoirege.wake
+package `is`.gregoirege.wake.helpers
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.net.Uri
 import android.support.design.widget.FloatingActionButton
+import android.view.View
+import android.view.ViewManager
+import org.jetbrains.anko.AnkoComponent
+import org.jetbrains.anko.internals.AnkoInternals
 import java.io.File
 
 val Int.dp
@@ -22,3 +27,8 @@ val File.uri: Uri
 var FloatingActionButton.backgroundTint
     inline get() = this.backgroundTintList!!.defaultColor
     inline set(value) { this.backgroundTintList = ColorStateList.valueOf(value) }
+
+
+interface AnkoViewProvider<out V: View> {
+    val view: V
+}

@@ -1,5 +1,6 @@
 package `is`.gregoirege.wake
 
+import `is`.gregoirege.wake.helpers.Theme
 import `is`.gregoirege.wake.spans.CustomTypefaceSpan
 import `is`.gregoirege.wake.spans.FullBackgroundColorSpan
 import android.content.Context
@@ -12,9 +13,17 @@ import android.view.View
 import com.vladsch.flexmark.ast.*
 import com.vladsch.flexmark.ext.gfm.strikethrough.Strikethrough
 import com.vladsch.flexmark.parser.Parser
-import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
+import com.vladsch.flexmark.ext.autolink.AutolinkExtension
+import com.vladsch.flexmark.ext.footnotes.Footnote
+import com.vladsch.flexmark.ext.footnotes.FootnoteExtension
+import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
+import com.vladsch.flexmark.ext.gfm.tasklist.TaskListExtension
+import com.vladsch.flexmark.ext.gfm.tasklist.TaskListItem
+import com.vladsch.flexmark.superscript.Superscript
+import com.vladsch.flexmark.superscript.SuperscriptExtension
+import com.vladsch.flexmark.util.options.MutableDataSet
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,51 +53,40 @@ class Renderer(private val context: Context, private val theme: Theme, private v
             VisitHandler(Heading::class.java, ::visit),
             VisitHandler(StrongEmphasis::class.java, ::visit),
             VisitHandler(Emphasis::class.java, ::visit),
+            VisitHandler(Strikethrough::class.java, ::visit),
+
             VisitHandler(Link::class.java, ::visit),
             VisitHandler(AutoLink::class.java, ::visit),
-            VisitHandler(Strikethrough::class.java, ::visit),
+            VisitHandler(RefNode::class.java, ::visit),
+            VisitHandler(MailLink::class.java, ::visit),
+            VisitHandler(InlineLinkNode::class.java, ::visit),
+
             VisitHandler(BulletListItem::class.java, ::visit),
+
             VisitHandler(CodeBlock::class.java, ::visit),
             VisitHandler(FencedCodeBlock::class.java, ::visit),
             VisitHandler(IndentedCodeBlock::class.java, ::visit),
+            VisitHandler(Code::class.java, ::visit),
+
             VisitHandler(BlockQuote::class.java, ::visit),
-            VisitHandler(Code::class.java, ::visit)
+
+            VisitHandler(Footnote::class.java, ::visit),
+            VisitHandler(Superscript::class.java, ::visit),
+            VisitHandler(TaskListItem::class.java, ::visit)
     )
 
-    private fun visit(text: Text) {
-        setSpan(ForegroundColorSpan(theme.foreground), text)
-    }
+    private val extensions = listOf(
+            StrikethroughExtension.create(),
+            AutolinkExtension.create(),
+            FootnoteExtension.create(),
+            SuperscriptExtension.create(),
+            TaskListExtension.create())
 
-    private fun visit(bold: StrongEmphasis) {
-        setSpan(StyleSpan(Typeface.BOLD), bold)
-    }
+    private val parserOptions = MutableDataSet()
+            .set(Parser.EXTENSIONS, extensions)
 
-    private fun visit(em: Emphasis) {
-        setSpan(StyleSpan(Typeface.ITALIC), em)
-    }
+    private val parser = Parser.builder(parserOptions).build()
 
-    private fun visitLink(link: Node, url: String) {
-        setSpan(object : URLSpan(url) {
-            override fun onClick(widget: View?) {
-                val i = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(url)
-                }
-                widget?.context?.startActivity(i)
-            }
-        }, link)
-    }
-
-    private fun visit(link: Link) {
-        visitLink(link, link.url.toString())
-    }
-
-    private fun visit(link: AutoLink) {
-        visitLink(link, link.url.toString())
-    }
-
-    private fun visit(strikethrough: Strikethrough) {
-        setSpan(StrikethroughSpan(), strikethrough)
-    }
 
     private fun visit(heading: Heading) {
         val size = when (heading.level) {
@@ -103,9 +101,72 @@ class Renderer(private val context: Context, private val theme: Theme, private v
         setSpan(RelativeSizeSpan(size), heading)
     }
 
+    private fun visit(text: Text) {
+        setSpan(ForegroundColorSpan(theme.foreground), text)
+    }
+
+    private fun visit(bold: StrongEmphasis) {
+        setSpan(StyleSpan(Typeface.BOLD), bold)
+    }
+
+    private fun visit(em: Emphasis) {
+        setSpan(StyleSpan(Typeface.ITALIC), em)
+    }
+
+    private fun visit(strikethrough: Strikethrough) {
+        setSpan(StrikethroughSpan(), strikethrough)
+    }
+
+
+    private fun visit(footnote: Footnote) {
+        setSpan(ForegroundColorSpan(Color.GRAY), footnote)
+    }
+
+    private fun visit(superscript: Superscript) {
+        setSpan(SuperscriptSpan(), superscript)
+    }
+
+    private fun visit(taskListItem: TaskListItem) {
+        setSpan(BulletSpan(), taskListItem)
+    }
+
+
+    private fun visit(link: Link) {
+        visitLink(link, link.url.toString())
+    }
+
+    private fun visit(link: AutoLink) {
+        visitLink(link, link.url.toString())
+    }
+
+    private fun visit(link: RefNode) {
+        visitLink(link, link.url.toString())
+    }
+
+    private fun visit(link: MailLink) {
+        visitLink(link, link.url.toString())
+    }
+
+    private fun visit(link: InlineLinkNode) {
+        visitLink(link, link.url.toString())
+    }
+
+    private fun visitLink(link: Node, url: String) {
+        setSpan(object : URLSpan(url) {
+            override fun onClick(widget: View?) {
+                val i = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                }
+                widget?.context?.startActivity(i)
+            }
+        }, link)
+    }
+
+
     private fun visit(bulletListItem: BulletListItem) {
         setSpan(BulletSpan(20, 0x00000000), bulletListItem)
     }
+
 
     private fun visit(code: CodeBlock)         = visitCode(code, true)
     private fun visit(code: Code)              = visitCode(code, false)
@@ -114,22 +175,24 @@ class Renderer(private val context: Context, private val theme: Theme, private v
 
     private fun visitCode(node: Node, block: Boolean) {
         if (block) {
-            setSpan(FullBackgroundColorSpan(theme.codeBackground), node)
+            setSpan(FullBackgroundColorSpan(theme.codeBackground), node, false)
         } else {
-            setSpan(BackgroundColorSpan(theme.codeBackground), node)
+            setSpan(BackgroundColorSpan(theme.codeBackground), node, false)
         }
 
-        setSpan(CustomTypefaceSpan(codeTypeface), node)
+        setSpan(CustomTypefaceSpan(codeTypeface), node, false)
         setSpan(ForegroundColorSpan(theme.codeForeground), node)
     }
 
+
     private fun visit(quote: BlockQuote) {
-        setSpan(FullBackgroundColorSpan(theme.quoteBackground), quote)
-        setSpan(ForegroundColorSpan(theme.quoteForeground), quote)
+        setSpan(FullBackgroundColorSpan(theme.quoteBackground), quote, false)
+        setSpan(ForegroundColorSpan(theme.quoteForeground), quote, false)
         setSpan(QuoteSpan(Color.TRANSPARENT), quote)
     }
 
-    private fun setSpan(style: Any, node: Node) {
+
+    private fun setSpan(style: Any, node: Node, visitChildren: Boolean = true) {
         if (node.textLength != 0) {
             val start = node.startOffset
             val end = node.endOffset
@@ -140,7 +203,9 @@ class Renderer(private val context: Context, private val theme: Theme, private v
             }
         }
 
-        visitor.visitChildren(node)
+        if (visitChildren) {
+            visitor.visitChildren(node)
+        }
     }
 
     fun render(s: String, start: Int, before: Int, count: Int) {
@@ -159,7 +224,7 @@ class Renderer(private val context: Context, private val theme: Theme, private v
         spans.clear()
 
         if (s.isNotEmpty()) {
-            visitor.visit(Parser.builder().build().parse(s))
+            visitor.visit(parser.parse(s))
         }
     }
 }

@@ -1,5 +1,6 @@
 package `is`.gregoirege.wake
 
+import `is`.gregoirege.wake.helpers.themeParser
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import org.jetbrains.anko.db.*

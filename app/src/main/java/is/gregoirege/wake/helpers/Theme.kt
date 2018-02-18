@@ -1,4 +1,4 @@
-package `is`.gregoirege.wake
+package `is`.gregoirege.wake.helpers
 
 import org.jetbrains.anko.db.classParser
 
@@ -14,4 +14,3 @@ class Theme(
         val quoteBackground: Int)
 
 val themeParser = classParser<Theme>()
-

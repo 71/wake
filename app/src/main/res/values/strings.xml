@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Wake</string>
+    <string name="empty"></string>
+
     <string name="directories">Directories</string>
     <string name="files">Files</string>
 
@@ -8,6 +10,8 @@
     <string name="create">Create</string>
     <string name="file_name">File name</string>
     <string name="dir_name">Directory name</string>
+
+    <string name="cannot_open">Cannot open %1$s.</string>
 
     <string name="lastModified">Last modified %1$s.</string>
 
