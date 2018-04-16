@@ -38,9 +38,11 @@ class EditActivity : AppCompatActivity() {
     lateinit var currentDir: File private set
     lateinit var currentFile: File private set
 
+    lateinit var userTheme: Theme
+
     val canReadWrite
         get() = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+             && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)  == PackageManager.PERMISSION_GRANTED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,18 +51,17 @@ class EditActivity : AppCompatActivity() {
 
         performSetup()
 
-        val canRead = canReadWrite
-
         currentDir = wakeDir
         currentFile = welcomeFile
 
-        val theme = Theme("default", "fonts/firacode_retina.ttf", "fonts/firacode_regular.ttf",
+        userTheme = Theme("default", "fonts/firacode_retina.ttf", "fonts/firacode_regular.ttf",
+                resources.getColor(R.color.colorAccent, theme),
                 Color.WHITE, Color.BLACK,
                 Color.WHITE, Color.DKGRAY,
                 Color.WHITE, Color.GRAY)
 
         drawer = drawerLayout {
-            backgroundColor = theme.background
+            backgroundColor = userTheme.background
 
             addDrawerListener(object : DrawerLayout.DrawerListener {
                 override fun onDrawerStateChanged(newState: Int) {}
@@ -77,18 +78,20 @@ class EditActivity : AppCompatActivity() {
                 view.lparams(height = matchParent, gravity = Gravity.START)
             }
 
+            browser.view.backgroundColor = userTheme.background
+
             addView(editor.view)
             addView(browser.view)
         }
 
         editor.initialize()
 
-        if (canRead) {
+        if (canReadWrite) {
             if (intent.data != null && openIntent(intent.data)) {
                 return
             }
 
-            changeDirectory(currentDir)
+            changeDirectory(currentDir, true)
             openFile(currentFile)
         }
     }
@@ -112,10 +115,14 @@ class EditActivity : AppCompatActivity() {
         return false
     }
 
-    fun changeDirectory(directory: File) {
+    fun changeDirectory(directory: File, force: Boolean = false) {
         val dir = when (directory.path) {
             ".." -> currentDir.parentFile
             else -> directory
+        }
+
+        if (!force && currentDir == dir) {
+            return
         }
 
         currentDir = dir
@@ -124,7 +131,6 @@ class EditActivity : AppCompatActivity() {
 
     fun openFile(file: File) {
         currentFile = file
-        browser.fileTextView.text = currentFile.name
 
         drawer.closeDrawer(Gravity.START)
 

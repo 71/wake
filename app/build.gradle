@@ -60,6 +60,9 @@ dependencies {
     // Keyboard listener
     compile 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
 
+    // Search view
+    implementation 'com.lapism:searchview:27.1.1.0.0'
+
     // Tests
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

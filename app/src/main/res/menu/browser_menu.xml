@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_files"
+        android:enabled="true"
+        android:icon="@drawable/ic_file"
+        android:title="@string/files" />
+    <item
+        android:id="@+id/action_directories"
+        android:enabled="true"
+        android:icon="@drawable/ic_folder"
+        android:title="@string/directories" />
+    <item
+        android:id="@+id/action_recent"
+        android:enabled="true"
+        android:icon="@drawable/ic_update"
+        android:title="@string/recent" />
+</menu>

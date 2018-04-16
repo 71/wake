@@ -5,36 +5,29 @@ import `is`.gregoirege.wake.activities.EditActivity
 import `is`.gregoirege.wake.adapters.FileDirectoryAdapter
 import `is`.gregoirege.wake.helpers.AnkoViewProvider
 import `is`.gregoirege.wake.helpers.DirectoryObserver
-import `is`.gregoirege.wake.helpers.dp
-import `is`.gregoirege.wake.helpers.sp
+import `is`.gregoirege.wake.helpers.isAvailable
 import android.graphics.Color
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.NavigationView
-import android.support.v7.app.AlertDialog
-import android.view.Gravity
-import android.widget.EditText
-import android.widget.ExpandableListView
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.View
+import android.widget.RelativeLayout
+import com.lapism.searchview.Search
+import com.lapism.searchview.widget.SearchView
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import org.jetbrains.anko.*
-import org.jetbrains.anko.design.floatingActionButton
-import org.jetbrains.anko.design.navigationView
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.design.bottomNavigationView
 import java.io.File
 
-class BrowserView(private val activity: EditActivity) : AnkoViewProvider<NavigationView> {
-    override val view: NavigationView by lazy {
+class BrowserView(private val activity: EditActivity) : AnkoViewProvider<RelativeLayout> {
+    override val view: RelativeLayout by lazy {
         createView(AnkoContext.create(activity, activity))
         mainView
     }
 
     private lateinit var adapter: FileDirectoryAdapter
-    private lateinit var directoryItemsView: ExpandableListView
+    private lateinit var mainView: RelativeLayout
 
-    private lateinit var pathTextView: TextView
-    private lateinit var mainView: NavigationView
+    lateinit var search: SearchView
 
-    lateinit var fileTextView: TextView private set
+    var searching = false
 
     private var observer : DirectoryObserver? = null
         set(value) {
@@ -47,150 +40,100 @@ class BrowserView(private val activity: EditActivity) : AnkoViewProvider<Navigat
 
         adapter = FileDirectoryAdapter(activity)
 
-        mainView = navigationView {
+        mainView = relativeLayout {
+            lparams(width = matchParent, height = matchParent)
+
             fitsSystemWindows = true
+            id = View.generateViewId()
 
-            verticalLayout {
-                frameLayout {
-                    imageView(R.drawable.header) {
-                        scaleType = ImageView.ScaleType.FIT_START
-                        adjustViewBounds = true
-                    }.lparams(height = wrapContent) {
-                        bottomMargin = dimen(R.dimen.drawer_image_cut) / 2
+            val nav = bottomNavigationView {
+                id = View.generateViewId()
+                backgroundColorResource = R.color.bottomnav_background
+
+                itemTextColor = activity.userTheme.getStateList(Color.LTGRAY)
+                itemIconTintList = itemTextColor
+
+                inflateMenu(R.menu.browser_menu)
+
+                setOnNavigationItemSelectedListener {
+                    when (it.itemId) {
+                        R.id.action_files       -> adapter.openFiles()
+                        R.id.action_directories -> adapter.openDirectories()
+                        R.id.action_recent      -> adapter.openRecentFiles()
                     }
 
-                    verticalLayout {
-                        pathTextView = textView {
-                            textColor = Color.WHITE
+                    true
+                }
+            }.lparams(width = matchParent, height = wrapContent) {
+                alignParentBottom()
+            }
 
-                            setShadowLayer(1f.sp, 1f.sp, 1f.sp, Color.argb(100, 0, 0, 0))
-                        }
-                        fileTextView = textView {
-                            textSize = 8f.sp
-                            textColor = Color.WHITE
+            val header = frameLayout {
+                id = View.generateViewId()
+                backgroundColorResource = R.color.header_background
 
-                            setShadowLayer(1f.sp, 1.5f.sp, 1.5f.sp, Color.argb(140, 0, 0, 0))
-                        }
-                    }.lparams(height = 200) {
-                        margin = dimen(R.dimen.drawer_padding)
+                search = SearchView(context).apply {
+                    setLogoIcon(R.drawable.ic_home)
+
+                    setOnLogoClickListener {
+                        setQuery(activity.currentFile.parentFile.absolutePath, false)
                     }
 
-                    linearLayout {
-                        lparams(width = matchParent, height = matchParent) {
-                            margin = dimen(R.dimen.fab_margin)
-                        }
+                    setOnQueryTextListener(object: Search.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: CharSequence): Boolean {
+                            val file = File(query.toString())
 
-                        floatingActionButton {
-                            imageResource = R.drawable.ic_create
-                            backgroundTintList = ui.ctx.getColorStateList(R.color.create)
-
-                            size = FloatingActionButton.SIZE_MINI
-
-                            onClick {
-                                var text : EditText? = null
-
-                                val view = ui.ctx.UI {
-                                    frameLayout {
-                                        text = editText {
-                                            hintResource = R.string.file_name
-                                        }.lparams(width = matchParent) {
-                                            margin = 5.dp
-                                        }
-                                    }
-                                }
-
-                                val dialog = AlertDialog.Builder(ui.owner)
-                                        .setTitle(R.string.create_file)
-                                        .setCancelable(true)
-                                        .setView(view.view)
-                                        .setPositiveButton(R.string.create, { _, _ ->
-                                            val newFileName = text?.text?.toString()
-
-                                            if (newFileName != null && !newFileName.isBlank()) {
-                                                val newFile = ui.owner.currentDir.resolve(newFileName)
-
-                                                newFile.createNewFile()
-                                                ui.owner.openFile(newFile)
-                                            }
-                                        })
-                                        .create()
-
-                                dialog.show()
+                            if (file.exists() && file.isFile ||
+                                    (file.parentFile != null && (file.parentFile.exists() && file.createNewFile()) || (file.parentFile.mkdirs() && file.createNewFile()))) {
+                                activity.openFile(file)
+                            } else if (file.isDirectory) {
+                                UIUtil.hideKeyboard(activity)
                             }
-                        }.lparams {
-                            rightMargin = dimen(R.dimen.fab_margin)
+
+                            return true
                         }
 
-                        floatingActionButton {
-                            imageResource = R.drawable.ic_create_new_folder
-                            backgroundTintList = ui.ctx.getColorStateList(R.color.create)
-
-                            size = FloatingActionButton.SIZE_MINI
-
-                            onClick {
-                                var text : EditText? = null
-
-                                val view = ui.ctx.UI {
-                                    frameLayout {
-                                        text = editText {
-                                            hintResource = R.string.dir_name
-                                        }.lparams(width = matchParent) {
-                                            margin = 5.dp
-                                        }
-                                    }
-                                }
-
-                                val dialog = AlertDialog.Builder(ui.owner)
-                                        .setTitle(R.string.create_dir)
-                                        .setCancelable(true)
-                                        .setView(view.view)
-                                        .setPositiveButton(R.string.create, { _, _ ->
-                                            val newDirName = text?.text?.toString()
-
-                                            if (newDirName != null && !newDirName.isBlank()) {
-                                                val newDir = ui.owner.currentDir.resolve(newDirName)
-
-                                                newDir.mkdir()
-                                                ui.owner.changeDirectory(newDir)
-                                            }
-                                        })
-                                        .create()
-
-                                dialog.show()
+                        override fun onQueryTextChange(newText: CharSequence) {
+                            if (searching) {
+                                return
                             }
+
+                            val file = File(newText.toString())
+
+                            searching = true
+
+                            if (file.isDirectory && file.isAvailable) {
+                                activity.changeDirectory(file)
+                            } else if (file.parentFile != null && file.parentFile.isAvailable && file.parentFile.isDirectory) {
+                                activity.changeDirectory(file.parentFile)
+                            }
+
+                            searching = false
                         }
-                    }.lparams {
-                        gravity = Gravity.BOTTOM or Gravity.END
-
-                        rightMargin = dimen(R.dimen.fab_margin)
-                        topMargin = dimen(R.dimen.drawer_image_cut)
-                    }
-
-                }.lparams(width = matchParent, height = wrapContent) {
-                    gravity = Gravity.TOP
+                    })
                 }
 
-                verticalLayout {
-                    val pad = dimen(R.dimen.drawer_padding)
-                    padding = pad
-                    leftPadding = pad * 2
-                    rightPadding = dimen(R.dimen.drawer_padding) * 4
+                addView(search)
+            }.lparams(width = matchParent, height = wrapContent)
 
-                    directoryItemsView = expandableListView {
-                        setAdapter(this@BrowserView.adapter)
-                    }
-                }
+            listView {
+                this@BrowserView.adapter = FileDirectoryAdapter(activity)
+                this@listView.adapter = this@BrowserView.adapter
+
+                dividerHeight = 0
+            }.lparams(width = matchParent, height = wrapContent) {
+                below(header)
+                above(nav)
             }
         }
-
-        directoryItemsView.expandGroup(0)
-        directoryItemsView.expandGroup(1)
 
         null
     }
 
     fun updateDirectoryListing(dir: File) {
-        pathTextView.text = dir.absolutePath
+        if (!searching) {
+            search.setQuery(dir.absolutePath, false)
+        }
 
         adapter.update(dir)
 

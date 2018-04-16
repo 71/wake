@@ -4,9 +4,8 @@ import `is`.gregoirege.wake.R
 import `is`.gregoirege.wake.Renderer
 import `is`.gregoirege.wake.activities.EditActivity
 import `is`.gregoirege.wake.helpers.AnkoViewProvider
-import `is`.gregoirege.wake.helpers.Theme
 import `is`.gregoirege.wake.helpers.dp
-import android.graphics.Color
+import android.content.res.ColorStateList
 import android.support.design.widget.FloatingActionButton
 import android.view.Gravity
 import android.view.View
@@ -42,10 +41,7 @@ class EditorView(private val activity: EditActivity) : AnkoViewProvider<FrameLay
         }
 
     private fun createView(ui: AnkoContext<EditActivity>) = with(ui) {
-        val theme = Theme("default", "fonts/firacode_retina.ttf", "fonts/firacode_regular.ttf",
-                Color.WHITE, Color.BLACK,
-                Color.WHITE, Color.DKGRAY,
-                Color.WHITE, Color.GRAY)
+        val theme = owner.userTheme
 
         mainFrame = frameLayout {
             lparams(width = matchParent, height = matchParent)
@@ -86,7 +82,7 @@ class EditorView(private val activity: EditActivity) : AnkoViewProvider<FrameLay
 
             fab = floatingActionButton {
                 imageResource = R.drawable.ic_save
-                backgroundTintList = ui.ctx.getColorStateList(R.color.save)
+                backgroundTintList = ColorStateList.valueOf(theme.accentColor)
                 visibility = View.INVISIBLE
 
                 onClick {

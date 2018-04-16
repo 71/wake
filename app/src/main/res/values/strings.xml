@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Wake</string>
-    <string name="empty"></string>
 
     <string name="directories">Directories</string>
     <string name="files">Files</string>
+    <string name="recent">Recent</string>
 
     <string name="create_file">Create file</string>
     <string name="create_dir">Create directory</string>
@@ -13,7 +13,7 @@
 
     <string name="cannot_open">Cannot open %1$s.</string>
 
-    <string name="lastModified">Last modified %1$s.</string>
+    <string name="last_modified">Last modified %1$s.</string>
 
     <string name="askPermission">
         ## File access permission
@@ -44,9 +44,15 @@
         \nThe current theme of the application can be set using the code block below.
         \n
         \n```yaml
-        \nfont: \'Roboto Mono\', monospace
+        \nfont: \'Roboto\', sans-serif
+        \ncodeFont: \'Fira Code\', \'Roboto Mono\', monospace
         \nbackground: #000
         \nforeground: #fff
+        \ncodeBackground: #000
+        \ncodeForeground: #fff
+        \nquoteBackground: #000
+        \nquoteForeground: #fff
+        \caccent: #00b0ff
         \n```
     </string>
 
@@ -56,7 +62,7 @@
         \n - Made by [Grégoire Geis](mailto:hello@gregoirege.is).
         \n - Repository hosted [on GitHub](https://github.com/6A/wake).
         \n
-        \n ## Licenses and attributions
-        \n - Header background by [Aaron Burden](https://unsplash.com/@aaronburden).
+        \n## Licenses and attributions
+        \n - TODO
     </string>
 </resources>

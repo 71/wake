@@ -163,6 +163,8 @@ class Renderer(private val context: Context, private val theme: Theme, private v
                 widget?.context?.startActivity(i)
             }
         }, link)
+
+        setSpan(ForegroundColorSpan(theme.accentColor), link)
     }
 
 

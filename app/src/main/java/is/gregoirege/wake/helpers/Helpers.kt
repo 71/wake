@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.net.Uri
+import android.os.Environment
 import android.support.design.widget.FloatingActionButton
 import android.view.View
 import android.view.ViewManager
@@ -23,6 +24,9 @@ val Float.px
 
 val File.uri: Uri
     inline get() = Uri.fromFile(this)
+
+val File.isAvailable: Boolean
+    get() = this == Environment.getExternalStorageDirectory() || this.parentFile?.isAvailable == true
 
 var FloatingActionButton.backgroundTint
     inline get() = this.backgroundTintList!!.defaultColor
