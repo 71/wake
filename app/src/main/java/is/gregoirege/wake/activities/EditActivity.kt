@@ -184,7 +184,7 @@ class EditActivity : AppCompatActivity() {
 
         val current = wakeDir.resolve("current.md")
 
-        if (!current.exists()) {
+        if (true || !current.exists()) {
             current.createNewFile()
             current.writeText(getString(R.string.defaultTheme))
         }

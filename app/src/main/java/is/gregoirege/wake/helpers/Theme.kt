@@ -38,13 +38,7 @@ class Theme(
             var quoteBackground: Int? = null
 
             fun parseColor(input: String): Int {
-                val inQuotes = Regex("\"#([0-9a-fA-F])\"").matchEntire(input)
-
-                if (inQuotes != null) {
-                    return Integer.parseInt(inQuotes.groupValues[1], 16)
-                }
-
-                val asHex = Regex("0x([0-9a-fA-F])").matchEntire(input)
+                val asHex = Regex("(0x|#)([0-9a-fA-F]){2,8}").matchEntire(input)
 
                 if (asHex != null) {
                     return Integer.parseInt(asHex.groupValues[1], 16)

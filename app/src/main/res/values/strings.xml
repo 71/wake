@@ -45,14 +45,14 @@
         \n
         \n```yaml
         \nfont: \'Roboto\', sans-serif
-        \ncodeFont: \'Fira Code\', \'Roboto Mono\', monospace
+        \ncodeFont: \'Fira Code\', monospace
         \nbackground: #000
         \nforeground: #fff
         \ncodeBackground: #000
         \ncodeForeground: #fff
         \nquoteBackground: #000
         \nquoteForeground: #fff
-        \caccent: #00b0ff
+        \naccent: #00b0ff
         \n```
     </string>
 
