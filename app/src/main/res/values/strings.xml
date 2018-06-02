@@ -34,14 +34,15 @@
         \nPreferences can be set using the code block below.
         \n
         \n```yaml
-        \n
+        \nsee all files: false
+        \ntheme: black
         \n```
     </string>
 
-    <string name="defaultTheme">
+    <string name="blackTheme">
         # Theme
         \n
-        \nThe current theme of the application can be set using the code block below.
+        \nThis is the black theme of the application, recommended for AMOLED devices.
         \n
         \n```yaml
         \nfont: \'Roboto\', sans-serif
@@ -52,6 +53,24 @@
         \ncodeForeground: #fff
         \nquoteBackground: #000
         \nquoteForeground: #fff
+        \naccent: #00b0ff
+        \n```
+    </string>
+
+    <string name="lightTheme">
+        # Theme
+        \n
+        \nThis is the light theme of the application.
+        \n
+        \n```yaml
+        \nfont: \'Roboto\', sans-serif
+        \ncodeFont: \'Fira Code\', monospace
+        \nbackground: #fff
+        \nforeground: #000
+        \ncodeBackground: #fff
+        \ncodeForeground: #000
+        \nquoteBackground: #fff
+        \nquoteForeground: #000
         \naccent: #00b0ff
         \n```
     </string>
